@@ -33,10 +33,6 @@ fun AuthScreen(
     onAuthSuccess: () -> Unit
 ) {
     val context = LocalContext.current
-    var phone by remember { mutableStateOf("9876543210") }
-    var otp by remember { mutableStateOf("") }
-    var isOtpSent by remember { mutableStateOf(false) }
-    var serverOtpHint by remember { mutableStateOf<String?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     // Loggin.dev WhatsApp Auth state
@@ -205,126 +201,36 @@ fun AuthScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(18.dp))
+                    if (!errorMessage.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = errorMessage!!,
+                            color = DownRed,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Divider(modifier = Modifier.weight(1f), color = BorderSubtle)
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = "Secure",
+                            tint = TextMuted,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = " OR LOGIN WITH SMS OTP ",
+                            text = "100% Encrypted • 1-Tap OTP-less WhatsApp Auth",
                             fontSize = 11.sp,
-                            color = TextMuted,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 8.dp)
+                            color = TextMuted
                         )
-                        Divider(modifier = Modifier.weight(1f), color = BorderSubtle)
-                    }
-
-                    Spacer(modifier = Modifier.height(18.dp))
-
-                    // Phone input
-                    OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = { Text("Mobile Number (10 digits)") },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = TextMuted) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryIndigo,
-                            unfocusedBorderColor = BorderSubtle,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary
-                        )
-                    )
-
-                    if (isOtpSent) {
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        OutlinedTextField(
-                            value = otp,
-                            onValueChange = { otp = it },
-                            label = { Text("Enter 6-digit OTP") },
-                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = TextMuted) },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = PrimaryIndigo,
-                                unfocusedBorderColor = BorderSubtle,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
-                            )
-                        )
-
-                        if (!serverOtpHint.isNullOrEmpty()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Dev OTP: $serverOtpHint (or 123456)",
-                                fontSize = 12.sp,
-                                color = UpGreen
-                            )
-                        }
-                    }
-
-                    if (!errorMessage.isNullOrEmpty()) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(text = errorMessage!!, color = DownRed, fontSize = 12.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Button(
-                        onClick = {
-                            errorMessage = null
-                            if (!isOtpSent) {
-                                if (phone.length < 10) {
-                                    errorMessage = "Please enter valid 10-digit number"
-                                    return@Button
-                                }
-                                viewModel.sendOtp(phone) { success, hint ->
-                                    if (success) {
-                                        isOtpSent = true
-                                        serverOtpHint = hint
-                                    } else {
-                                        errorMessage = hint ?: "Failed to send OTP"
-                                    }
-                                }
-                            } else {
-                                if (otp.length < 4) {
-                                    errorMessage = "Please enter valid OTP"
-                                    return@Button
-                                }
-                                viewModel.verifyOtp(phone, otp) { success, err ->
-                                    if (success) {
-                                        onAuthSuccess()
-                                    } else {
-                                        errorMessage = err ?: "Invalid OTP"
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryIndigo),
-                        enabled = !isLoading
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp), color = TextPrimary)
-                        } else {
-                            Text(
-                                text = if (!isOtpSent) "Send OTP" else "Verify & Enter Market",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        }
                     }
                 }
             }

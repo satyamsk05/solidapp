@@ -191,24 +191,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun sendOtp(phone: String, onComplete: (Boolean, String?) -> Unit) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val res = api.sendOtp(SendOtpRequest(phone))
-                _isLoading.value = false
-                if (res.isSuccessful && res.body()?.success == true) {
-                    onComplete(true, res.body()?.otp)
-                } else {
-                    onComplete(false, "Failed to send OTP")
-                }
-            } catch (e: Exception) {
-                _isLoading.value = false
-                onComplete(false, e.message)
-            }
-        }
-    }
-
     fun initLogginAuth(onComplete: (Boolean, String?, String?, String?) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -237,7 +219,7 @@ class MainViewModel : ViewModel() {
                     _token.value = body.token
                     _user.value = body.user
                     _wallet.value = Wallet(body.user.id, body.user.balance, body.user.lockedBalance)
-                    WebSocketManager.authenticate(body.user.id)
+                    WebSocketManager.authenticate(body.user.id, body.token)
                     refreshUserData()
                     onComplete(true, null)
                 } else {
@@ -245,30 +227,6 @@ class MainViewModel : ViewModel() {
                     onComplete(false, err)
                 }
             } catch (e: Exception) {
-                onComplete(false, e.message)
-            }
-        }
-    }
-
-    fun verifyOtp(phone: String, otp: String, onComplete: (Boolean, String?) -> Unit) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val res = api.verifyOtp(VerifyOtpRequest(phone, otp))
-                _isLoading.value = false
-                if (res.isSuccessful && res.body() != null) {
-                    val body = res.body()!!
-                    _token.value = body.token
-                    _user.value = body.user
-                    _wallet.value = Wallet(body.user.id, body.user.balance, body.user.lockedBalance)
-                    WebSocketManager.authenticate(body.user.id)
-                    refreshUserData()
-                    onComplete(true, null)
-                } else {
-                    onComplete(false, "Invalid OTP code")
-                }
-            } catch (e: Exception) {
-                _isLoading.value = false
                 onComplete(false, e.message)
             }
         }

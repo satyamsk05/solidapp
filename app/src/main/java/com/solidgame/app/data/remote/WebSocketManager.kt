@@ -33,7 +33,13 @@ object WebSocketManager {
     private val _betResults = MutableSharedFlow<JSONObject>(extraBufferCapacity = 16)
     val betResults = _betResults.asSharedFlow()
 
-    fun connect(userId: String? = null) {
+    private var currentUserId: String? = null
+    private var currentUserToken: String? = null
+
+    fun connect(userId: String? = null, token: String? = null) {
+        if (!userId.isNullOrEmpty()) currentUserId = userId
+        if (!token.isNullOrEmpty()) currentUserToken = token
+
         if (socket?.connected() == true) return
 
         try {
@@ -48,8 +54,8 @@ object WebSocketManager {
                 on(Socket.EVENT_CONNECT) {
                     Log.d(TAG, "Connected to WebSocket Server")
                     _isConnected.value = true
-                    if (!userId.isNullOrEmpty()) {
-                        authenticate(userId)
+                    if (!currentUserId.isNullOrEmpty()) {
+                        authenticate(currentUserId!!, currentUserToken)
                     }
                 }
 
@@ -113,9 +119,15 @@ object WebSocketManager {
         }
     }
 
-    fun authenticate(userId: String) {
+    fun authenticate(userId: String, token: String? = null) {
+        currentUserId = userId
+        if (!token.isNullOrEmpty()) currentUserToken = token
+
         val payload = JSONObject().apply {
             put("userId", userId)
+            if (!currentUserToken.isNullOrEmpty()) {
+                put("token", currentUserToken)
+            }
         }
         socket?.emit("authenticate", payload)
     }

@@ -81,7 +81,7 @@ fun HomeScreen(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "₹${String.format("%.2f", wallet?.balance ?: 1000.0)}",
+                    text = "₹${String.format("%.2f", wallet?.balance ?: 0.0)}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary

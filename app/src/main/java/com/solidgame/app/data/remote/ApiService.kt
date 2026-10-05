@@ -13,12 +13,6 @@ interface ApiService {
     @POST("auth/loggin-verify")
     suspend fun verifyLoggin(@Body request: VerifyLogginRequest): Response<VerifyOtpResponse>
 
-    @POST("auth/send-otp")
-    suspend fun sendOtp(@Body request: SendOtpRequest): Response<SendOtpResponse>
-
-    @POST("auth/verify-otp")
-    suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<VerifyOtpResponse>
-
     @GET("auth/me")
     suspend fun getProfile(@Header("Authorization") token: String): Response<UserProfile>
 

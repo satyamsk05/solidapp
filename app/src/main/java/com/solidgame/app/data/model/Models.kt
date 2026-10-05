@@ -67,21 +67,6 @@ data class Transaction(
     val createdAt: Long
 )
 
-data class SendOtpRequest(
-    val phone: String
-)
-
-data class SendOtpResponse(
-    val success: Boolean,
-    val message: String,
-    val otp: String? = null
-)
-
-data class VerifyOtpRequest(
-    val phone: String,
-    val otp: String
-)
-
 data class LogginInitResponse(
     val success: Boolean,
     val token: String,

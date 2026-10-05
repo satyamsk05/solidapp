@@ -66,7 +66,7 @@ fun WalletScreen(
 
         // Balance Card
         BalanceCard(
-            balance = wallet?.balance ?: 1000.0,
+            balance = wallet?.balance ?: 0.0,
             lockedBalance = wallet?.lockedBalance ?: 0.0,
             onDepositClick = {
                 amountInput = "500"
