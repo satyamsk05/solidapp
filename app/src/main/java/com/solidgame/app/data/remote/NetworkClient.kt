@@ -8,10 +8,9 @@ import java.util.concurrent.TimeUnit
 
 object NetworkClient {
 
-    // Default Android Emulator loopback to host PC.
-    // Can be updated to LAN IP for physical device testing.
-    var baseUrl: String = "http://10.0.2.2:5001/api/"
-    var socketUrl: String = "http://10.0.2.2:5001"
+    // Live AWS EC2 Backend
+    var baseUrl: String = "http://43.204.217.93:5001/api/"
+    var socketUrl: String = "http://43.204.217.93:5001"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
