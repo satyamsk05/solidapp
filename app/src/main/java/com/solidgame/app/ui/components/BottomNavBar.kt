@@ -47,7 +47,7 @@ fun CustomBottomNavBar(
             val isSelected = selectedTab == tab
 
             Column(
-                horizontalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
